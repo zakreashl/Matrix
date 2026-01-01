@@ -28,6 +28,7 @@ int main() {
             return 1;
         }
 
+        kill(getpid(), SIGTERM); // Also kill the now orphan process
         perror("Parent Kill Success\n");
     }
 
@@ -36,7 +37,7 @@ int main() {
         system("clear"); // Clear the terminal
         printf("Time remaining: %d seconds\n", 2);
         fflush(stdout);
-        usleep(100); // sleep for 0.1 seconds
+        usleep(10000); // sleep for 0.1 seconds
     }
 
     system("clear"); // Clear terminal

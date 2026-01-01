@@ -9,7 +9,7 @@ all: Matrix.c # Builds matrix
 run: # Runs matrix
 	./builds/matrix
 
-pushAll: 
+pushAll: # Stages all files, looks at the status, commits it with a message, then pushes commit
 	git add .
 	git status
 	git commit -m "$(MSG)"
