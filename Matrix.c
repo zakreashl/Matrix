@@ -4,10 +4,12 @@
 #include <time.h>
 #include <unistd.h>
 #include <signal.h>
+#include <locale.h>
 
 const int WIDTH, LENGTH = 100; // Width and length of the Matrix display
 
 int main() {
+    setlocale(LC_ALL, ""); // Set the locale to support Unicode output
     pid_t parent_pid = getpid(); // Get the parent process id
 
     pid_t pid = fork(); // fork() makes a child process (a copy of the parent process which is this process) and gives each process a process id (pid)
@@ -27,27 +29,20 @@ int main() {
             perror("Parent Kill Failed\n");
             return 1;
         }
-
+    
+        system("clear");
         kill(getpid(), SIGTERM); // Also kill the now orphan process
     }
 
-    int counter = 0;
+    int char_displayed = 0x0041;
 
     // This is where parent will be
     while(1) {
         system("clear"); // Clear the terminal
-        printf("Counter: %d\n", counter);
-        printf("Hacking");
-
-        for(int i = 0; i < counter % 4; i++) {
-            printf(".");
-        }
-
-        printf("\n");
-
+        printf("%lc\n", (wchar_t)char_displayed);
+        char_displayed++;
         fflush(stdout); // Put the print statment about directly to the terminal
-        counter++;
-        usleep(1000000); // sleep for 0.1 seconds
+        usleep(25000); // sleep for 0.1 seconds
     }
 
     system("clear"); // Clear terminal
