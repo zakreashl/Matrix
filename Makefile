@@ -10,7 +10,7 @@ run: # Runs matrix
 	./builds/matrix
 
 pushAll: 
-	git status
 	git add .
+	git status
 	git commit -m "$MSG"
 	git push
