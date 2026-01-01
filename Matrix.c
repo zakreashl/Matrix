@@ -29,15 +29,25 @@ int main() {
         }
 
         kill(getpid(), SIGTERM); // Also kill the now orphan process
-        perror("Parent Kill Success\n");
     }
+
+    int counter = 0;
 
     // This is where parent will be
     while(1) {
         system("clear"); // Clear the terminal
-        printf("Time remaining: %d seconds\n", 2);
-        fflush(stdout);
-        usleep(10000); // sleep for 0.1 seconds
+        printf("Counter: %d\n", counter);
+        printf("Hacking");
+
+        for(int i = 0; i < counter % 4; i++) {
+            printf(".");
+        }
+
+        printf("\n");
+
+        fflush(stdout); // Put the print statment about directly to the terminal
+        counter++;
+        usleep(1000000); // sleep for 0.1 seconds
     }
 
     system("clear"); // Clear terminal
