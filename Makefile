@@ -12,5 +12,5 @@ run: # Runs matrix
 pushAll: 
 	git add .
 	git status
-	git commit -m "$MSG"
+	git commit -m "$(MSG)"
 	git push
