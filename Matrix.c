@@ -8,13 +8,13 @@
 const int WIDTH, LENGTH = 100; // Width and length of the Matrix display
 
 int main() {
-    pid_t parent_pid = getpid();
+    pid_t parent_pid = getpid(); // Get the parent process id
 
     pid_t pid = fork(); // fork() makes a child process (a copy of the parent process which is this process) and gives each process a process id (pid)
     // fork() uses CPU cores if they are avalible 
     // If they aren't, 1 CPU core will do both process very fast
 
-    if(pid < 0) {
+    if(pid < 0) { // Process id < 0 means there was an error
         perror("Fork Fail\n");
         return 1;
     }
@@ -22,8 +22,8 @@ int main() {
     //printf("Hello World, pid = %d\n", getpid());
 
     if(pid == 0) { // Child process
-        getchar(); // wait for user to press enter
-        if(kill(parent_pid, SIGTERM) == -1) {
+        getchar(); // Wait for user to press enter
+        if(kill(parent_pid, SIGTERM) == -1) { // Kill parent process with safety nets
             perror("Parent Kill Failed\n");
             return 1;
         }
@@ -31,14 +31,15 @@ int main() {
         perror("Parent Kill Success\n");
     }
 
+    // This is where parent will be
     while(1) {
-        system("clear");
+        system("clear"); // Clear the terminal
         printf("Time remaining: %d seconds\n", 2);
         fflush(stdout);
-        usleep(100);
+        usleep(100); // sleep for 0.1 seconds
     }
 
-    system("clear");
+    system("clear"); // Clear terminal
 
     return 0;
 }
