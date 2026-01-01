@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-const int WIDTH, LENGTH = 100;
+const int WIDTH, LENGTH = 100; // Width and length of the Matrix display
 
 int main() {
     pid_t parent_pid = getpid();
