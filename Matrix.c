@@ -5,8 +5,19 @@
 #include <unistd.h>
 #include <signal.h>
 #include <locale.h>
+#include <stdbool.h>
 
-const int WIDTH, LENGTH = 100; // Width and length of the Matrix display
+const int WIDTH, HEIGHT = 100; // Width and length of the Matrix display
+
+
+typedef struct mchar_t {
+    unsigned short char_index; // The unicode index of the char
+    char duration_remaining; // Amount of time until the char disappears
+
+    bool is_head; // If this char is a head or not
+    char x, y; // X and Y positions of the char
+    char tail_length; // Length of the matrix thing
+} mchar; // matrix char
 
 int main() {
     setlocale(LC_ALL, ""); // Set the locale to support Unicode output
@@ -17,7 +28,7 @@ int main() {
     // If they aren't, 1 CPU core will do both process very fast
 
     if(pid < 0) { // Process id < 0 means there was an error
-        perror("Fork Fail\n");
+        printf("Failed to fork\n");
         return 1;
     }
 
@@ -26,23 +37,22 @@ int main() {
     if(pid == 0) { // Child process
         getchar(); // Wait for user to press enter
         if(kill(parent_pid, SIGTERM) == -1) { // Kill parent process with safety nets
-            perror("Parent Kill Failed\n");
-            return 1;
+            printf("Parent kill failed\n");
+            _exit(1);
         }
     
         system("clear");
         kill(getpid(), SIGTERM); // Also kill the now orphan process
     }
 
-    int char_displayed = 0x0041;
+    mchar display[HEIGHT][WIDTH]; // matrix chars that will be diplayed to the screen
+
 
     // This is where parent will be
     while(1) {
-        system("clear"); // Clear the terminal
-        printf("%lc\n", (wchar_t)char_displayed);
-        char_displayed++;
+        //system("clear"); // Clear the terminal
         fflush(stdout); // Put the print statment about directly to the terminal
-        usleep(25000); // sleep for 0.1 seconds
+        usleep(100000); // sleep for 0.1 seconds
     }
 
     system("clear"); // Clear terminal
