@@ -14,6 +14,9 @@ const char HEIGHT = 10 * 5;
 const int CHAR_MIN = 33; // Min and max of the chars that can be displayed
 const int CHAR_MAX = 126;
 
+const char TAIL_MIN = 3; // Min and max lengths of the matrix tails
+const char TAIL_MAX = 10;
+
 const char SPACE = ' ';
 
 typedef struct mchar_t {
@@ -30,13 +33,14 @@ int get_rand_num(int min, int max) {
 }
 
 void add_heads(mchar matrix[HEIGHT][WIDTH]) {
-    char num_heads = get_rand_num(1,1);
+    char num_heads = get_rand_num(1,7);
 
     for(int i = 0; i < num_heads; i++) {
         char rand_x = get_rand_num(0, WIDTH);
 
         matrix[0][rand_x].is_head = true;
         matrix[0][rand_x].char_index = get_rand_num(CHAR_MIN, CHAR_MAX);
+        matrix[0][rand_x].tail_length = get_rand_num(TAIL_MIN, TAIL_MAX);
     }
 }
 
@@ -69,8 +73,9 @@ void update_matrix(mchar matrix[HEIGHT][WIDTH]) {
                     matrix[y + 1][x].is_head = true;
                     matrix[y][x].is_head = false;
 
-                    matrix[y][x].char_index = matrix[y + 1][x].char_index;
-                    matrix[y][x].duration_remaining = matrix[y + 1][x].tail_length;
+                    matrix[y][x].duration_remaining = matrix[y][x].tail_length;
+                    matrix[y + 1][x].tail_length = matrix[y][x].tail_length;
+                    matrix[y][x].tail_length = 0;
 
                     matrix[y + 1][x].char_index = get_rand_num(CHAR_MIN, CHAR_MAX);
                 }
@@ -92,10 +97,10 @@ void update_matrix(mchar matrix[HEIGHT][WIDTH]) {
 void set_matrix(mchar matrix[HEIGHT][WIDTH]) {
     for(int y = 0; y < HEIGHT; y++) {
         for(int x = 0; x < WIDTH; x++) {
-            matrix[y][x].char_index = 0;
+            matrix[y][x].char_index = SPACE;
             matrix[y][x].duration_remaining = 0;
 
-            matrix[y][x].is_head = 0;
+            matrix[y][x].is_head = false;
             matrix[y][x].tail_length = 0;
         }
     }
@@ -137,12 +142,15 @@ int main() {
     while(1) {
         system("clear"); // Clear the terminal
         
-        add_heads(matrix);
+        add_heads(matrix); // Add some heads at the top
         update_matrix(matrix); // Update the matrix
+
+        printf("\x1b[32m"); // Make the terminal green
         display_matrix(matrix); // Display the matrix
+        printf("\x1b[0m"); // Reset the terminal color
 
         fflush(stdout); // Put the print statment about directly to the terminal
-        usleep(100000); // sleep for 0.1 seconds
+        usleep(50000); // sleep for 0.1 seconds
     }
 
     system("clear"); // Clear terminal
