@@ -14,12 +14,13 @@ const char HEIGHT = 10 * 5;
 const int CHAR_MIN = 33; // Min and max of the chars that can be displayed
 const int CHAR_MAX = 126;
 
+const char SPACE = ' ';
+
 typedef struct mchar_t {
     char char_index; // The unicode index of the char
     char duration_remaining; // Amount of time until the char disappears
 
     bool is_head; // If this char is a head or not
-    char x, y; // X and Y positions of the char
     char tail_length; // Length of the matrix thing
 } mchar; // matrix char
 
@@ -39,9 +40,40 @@ void display_matrix(mchar matrix[HEIGHT][WIDTH]) {
 }
 
 void update_matrix(mchar matrix[HEIGHT][WIDTH]) {
-    for(int y = 0; y < HEIGHT; y++) {
+    for(int y = HEIGHT; y >= 0; y--) {
         for(int x = 0; x < WIDTH; x++) {
-            matrix[y][x].char_index = get_rand_num(CHAR_MIN, CHAR_MAX);
+            mchar curr_char = matrix[y][x];
+
+            if(curr_char.is_head) {
+                // Update a matrix head
+
+                if(y <= HEIGHT) {
+                    // Check if it is going to go outside the array
+                    matrix[y][x].is_head = false;
+                    matrix[y][x].duration_remaining = matrix[y][x].tail_length;
+                    matrix[y][x].tail_length = 0;
+                } else {
+                    // If not we do dis
+
+                    matrix[y + 1][x].is_head = true;
+                    matrix[y][x].is_head = false;
+
+                    matrix[y][x].char_index = matrix[y + 1][x].char_index;
+                    matrix[y][x].duration_remaining = matrix[y + 1][x].tail_length;
+
+                    matrix[y + 1][x].char_index = get_rand_num(CHAR_MIN, CHAR_MAX);
+                }
+                
+
+            } else {
+                // Update a normal matrix char
+
+                if(curr_char.duration_remaining <= 0) {
+                    matrix[y][x].char_index = SPACE;
+                }
+
+                matrix[y][x].duration_remaining--;
+            }
         }
     }
 }
@@ -53,8 +85,6 @@ void set_matrix(mchar matrix[HEIGHT][WIDTH]) {
             matrix[y][x].duration_remaining = 0;
 
             matrix[y][x].is_head = 0;
-            matrix[y][x].x = x;
-            matrix[y][x].y = y;
             matrix[y][x].tail_length = 0;
         }
     }
