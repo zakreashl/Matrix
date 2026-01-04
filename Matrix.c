@@ -6,13 +6,16 @@
 #include <signal.h>
 #include <locale.h>
 #include <stdbool.h>
+#include <wchar.h>
 
-const int WIDTH  = 100; // Width and length of the Matrix display 
-const int HEIGHT = 100;
+const char WIDTH  = 16 * 5; // Width and length of the Matrix display 
+const char HEIGHT = 10 * 5;
 
+const int CHAR_MIN = 33; // Min and max of the chars that can be displayed
+const int CHAR_MAX = 126;
 
 typedef struct mchar_t {
-    unsigned short char_index; // The unicode index of the char
+    char char_index; // The unicode index of the char
     char duration_remaining; // Amount of time until the char disappears
 
     bool is_head; // If this char is a head or not
@@ -20,20 +23,47 @@ typedef struct mchar_t {
     char tail_length; // Length of the matrix thing
 } mchar; // matrix char
 
-void update_display(mchar display[HEIGHT][WIDTH]) {
-    printf("%d : %d\n", WIDTH, HEIGHT);
-    
-    for(int x = 0; x < WIDTH; x++) {
-        for(int y = 0; y < HEIGHT; y++) {
-            printf("%c ", (wchar_t)display[y][x].is_head);
+int get_rand_num(int min, int max) {
+    // Return a random number between min and max
+    return (rand() % max) + min;
+}
+
+void display_matrix(mchar matrix[HEIGHT][WIDTH]) {
+    for(int y = 0; y < HEIGHT; y++) {
+        for(int x = 0; x < WIDTH; x++) {
+            printf("%c ", matrix[y][x].char_index);
         }
 
         printf("\n");
     }
 }
 
+void update_matrix(mchar matrix[HEIGHT][WIDTH]) {
+    for(int y = 0; y < HEIGHT; y++) {
+        for(int x = 0; x < WIDTH; x++) {
+            matrix[y][x].char_index = get_rand_num(CHAR_MIN, CHAR_MAX);
+        }
+    }
+}
+
+void set_matrix(mchar matrix[HEIGHT][WIDTH]) {
+    for(int y = 0; y < HEIGHT; y++) {
+        for(int x = 0; x < WIDTH; x++) {
+            matrix[y][x].char_index = 0;
+            matrix[y][x].duration_remaining = 0;
+
+            matrix[y][x].is_head = 0;
+            matrix[y][x].x = x;
+            matrix[y][x].y = y;
+            matrix[y][x].tail_length = 0;
+        }
+    }
+}
+
 int main() {
     setlocale(LC_ALL, ""); // Set the locale to support Unicode output
+    srand(time(NULL)); // Set the random seed
+
     pid_t parent_pid = getpid(); // Get the parent process id
 
     pid_t pid = fork(); // fork() makes a child process (a copy of the parent process which is this process) and gives each process a process id (pid)
@@ -58,13 +88,17 @@ int main() {
         kill(getpid(), SIGTERM); // Also kill the now orphan process
     }
 
-    mchar display[HEIGHT][WIDTH]; // matrix chars that will be diplayed to the screen
-
+    mchar matrix[HEIGHT][WIDTH]; // matrix chars that will be diplayed to the screen
     
+    set_matrix(matrix); // Set all the mchars
+
     // This is where parent will be
     while(1) {
         system("clear"); // Clear the terminal
-        update_display(display);
+        
+        update_matrix(matrix); // Update the matrix
+        display_matrix(matrix); // Display the matrix
+
         fflush(stdout); // Put the print statment about directly to the terminal
         usleep(100000); // sleep for 0.1 seconds
     }
