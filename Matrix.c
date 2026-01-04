@@ -29,6 +29,17 @@ int get_rand_num(int min, int max) {
     return (rand() % max) + min;
 }
 
+void add_heads(mchar matrix[HEIGHT][WIDTH]) {
+    char num_heads = get_rand_num(1,1);
+
+    for(int i = 0; i < num_heads; i++) {
+        char rand_x = get_rand_num(0, WIDTH);
+
+        matrix[0][rand_x].is_head = true;
+        matrix[0][rand_x].char_index = get_rand_num(CHAR_MIN, CHAR_MAX);
+    }
+}
+
 void display_matrix(mchar matrix[HEIGHT][WIDTH]) {
     for(int y = 0; y < HEIGHT; y++) {
         for(int x = 0; x < WIDTH; x++) {
@@ -47,7 +58,7 @@ void update_matrix(mchar matrix[HEIGHT][WIDTH]) {
             if(curr_char.is_head) {
                 // Update a matrix head
 
-                if(y <= HEIGHT) {
+                if(y >= HEIGHT) {
                     // Check if it is going to go outside the array
                     matrix[y][x].is_head = false;
                     matrix[y][x].duration_remaining = matrix[y][x].tail_length;
@@ -126,6 +137,7 @@ int main() {
     while(1) {
         system("clear"); // Clear the terminal
         
+        add_heads(matrix);
         update_matrix(matrix); // Update the matrix
         display_matrix(matrix); // Display the matrix
 
