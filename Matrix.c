@@ -7,7 +7,8 @@
 #include <locale.h>
 #include <stdbool.h>
 
-const int WIDTH, HEIGHT = 100; // Width and length of the Matrix display
+const int WIDTH  = 100; // Width and length of the Matrix display 
+const int HEIGHT = 100;
 
 
 typedef struct mchar_t {
@@ -18,6 +19,18 @@ typedef struct mchar_t {
     char x, y; // X and Y positions of the char
     char tail_length; // Length of the matrix thing
 } mchar; // matrix char
+
+void update_display(mchar display[HEIGHT][WIDTH]) {
+    printf("%d : %d\n", WIDTH, HEIGHT);
+    
+    for(int x = 0; x < WIDTH; x++) {
+        for(int y = 0; y < HEIGHT; y++) {
+            printf("%c ", (wchar_t)display[y][x].is_head);
+        }
+
+        printf("\n");
+    }
+}
 
 int main() {
     setlocale(LC_ALL, ""); // Set the locale to support Unicode output
@@ -47,10 +60,11 @@ int main() {
 
     mchar display[HEIGHT][WIDTH]; // matrix chars that will be diplayed to the screen
 
-
+    
     // This is where parent will be
     while(1) {
-        //system("clear"); // Clear the terminal
+        system("clear"); // Clear the terminal
+        update_display(display);
         fflush(stdout); // Put the print statment about directly to the terminal
         usleep(100000); // sleep for 0.1 seconds
     }
